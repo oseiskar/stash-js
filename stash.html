@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>stash.js</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"/></script>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+<script src="stash.js"/></script>
+<script>
+$(document).ready(function() {
+    $("#tinyurl-form").hide();
+    
+    try {
+        data = decodeQuery();
+        
+        if (!navigator.geolocation) {
+            showError("Geolocation is not supported by this browser.");
+        }
+        else
+        {
+            if (data === undefined) {
+                renderNewStash();
+            }
+            else {
+                beginStashed( data );
+            }
+        }
+    }
+    catch (exception)
+    {
+        showError(exception.message);
+        throw exception;
+    }
+});
+</script>
+</head>
+<body>
+<div id="error-box"></div>
+<div id="content-box"></div>
+
+</body>
+</html>
+
+
