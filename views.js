@@ -13,6 +13,12 @@ function buildCoordinateBox( params ) {
     return panel;
 }
 
+function debugWithBothOnMap( elem, stashedCoords, currentCoords ) {
+    var d = $('<div/>');
+    window.stashViews.bothOnMap.renderer( d, stashedCoords, currentCoords )
+    d.appendTo(elem);
+}
+
 // views
 window.stashViews = {
   debug: {
@@ -40,6 +46,10 @@ window.stashViews = {
         var dlong = stashedCoords.longitude - currentCoords.longitude;
         
         var adlat = Math.abs(dlat), adlong = Math.abs(dlong);
+        console.log(dlat);
+        console.log(dlong);
+        console.log(adlat);
+        console.log(adlong);
         
         dir = 'nowhere';
         
@@ -58,6 +68,27 @@ window.stashViews = {
         elem.append($('<div/>', {
             'class': 'command',
             text: command }));
+            
+        //debugWithBothOnMap( elem, stashedCoords, currentCoords );
+    }
+  },
+  
+  bothOnMap: {
+    name: "Show on map",
+    renderer: function ( elem, stashed, current ) {
+    
+        elem.html('');
+        
+        elem.append( buildGoogleMap(
+            $.extend({}, stashed, {
+                extraMarker: {
+                    color: 'blue',
+                    latitude: current.latitude,
+                    longitude: current.longitude
+                }
+            }))
+        );
+        
     }
   }
 };

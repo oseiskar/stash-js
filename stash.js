@@ -33,7 +33,7 @@ function doStash( coords, selectedMode ) {
     container.append( buildLinkButton( {
         text: "Try stash",
         href: buildQueryString( {code: code} )
-        }, 'btn-success') );
+    }, 'btn-success') );
     
     var form = $('<form/>', {
         action: "http://tinyurl.com/create.php",
@@ -109,7 +109,7 @@ function renderNewStash( coords ) {
     
     previewBox.append(buildButton( 'Refresh', 'btn-default', function() {
         getLocation( function (loc) {
-        renderNewStash( coords );
+        renderNewStash( loc.coords );
         } );
     }));
     
@@ -191,12 +191,17 @@ function buildEditableCoordinateBox( coords ) {
 
 function buildGoogleMap( params ) {
 
-    lat = params.latitude;
-    long = params.longitude;
+    var lat = params.latitude;
+    var long = params.longitude;
+    var markers = [ "color:red|"+lat + "," + long ];
+    if (params.extraMarker) {
+        var m = params.extraMarker
+        markers.push( "color:"+m.color+"|"+m.latitude+","+m.longitude );
+    }
 
     queryParams = {
         center: lat + ',' + long,
-        markers: "color:red|"+lat + "," + long,
+        markers: markers,
         zoom: "15",
         size: "300x300",
         sensor: "false"
@@ -288,7 +293,12 @@ function buildQueryString( obj ) {
     var arr = [];
     for (var param in obj) {
         var value = obj[param];
-        arr.push( param + "=" + encodeURIComponent(value) );
+        if ($.isArray(value)) {
+            for (var i in value)
+                arr.push( param + '=' + encodeURIComponent(value[i]) );
+        }
+        else
+            arr.push( param + "=" + encodeURIComponent(value) );
     }
     if (arr.length == 0) return '';
     return '?'+arr.join('&');
