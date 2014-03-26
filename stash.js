@@ -1,8 +1,7 @@
 
 // actions
-function doStash( location, selectedMode ) {
+function doStash( coords, selectedMode ) {
 
-    var coords  = location.coords;
     if (selectedMode === undefined) selectedMode = window.defaultStashView;
     var container = $('#stash-box');
     
@@ -25,7 +24,7 @@ function doStash( location, selectedMode ) {
     
     dropdown.change( function () {
         var selected = $('#mode-selector').val();
-        doStash( location, selected );
+        doStash( coords, selected );
     } );
     
     formGroup.append(dropdown);
@@ -97,29 +96,27 @@ function beginNewStash() {
     container.append($('<div/>', {id: 'result-box'}));
     
     getLocation( function (loc) {
-        renderNewStash( loc );
+        renderNewStash( loc.coords );
     } );
     
     $('#stash-box').hide();
 }
 
-function renderNewStash( location ) {
+function renderNewStash( coords ) {
 
     var previewBox = $('#result-box');
     previewBox.html('');
     
     previewBox.append(buildButton( 'Refresh', 'btn-default', function() {
         getLocation( function (loc) {
-        renderNewStash( loc );
+        renderNewStash( coords );
         } );
     }));
     
-    var coords = location.coords;
-    
-    previewBox.append(buildCoordinateBox( coords ));
+    previewBox.append(buildEditableCoordinateBox(coords));
     previewBox.append(buildGoogleMap( coords ));
     
-    doStash(location);
+    doStash(coords);
 }
 
 function buildButton( text, classes, action ) {
@@ -136,6 +133,60 @@ function buildLinkButton( params, classes ) {
         'class': 'btn btn-primary btn-block btn-and-space '+classes,
         role: "button",
     },params));
+}
+
+function buildEditableCoordinateBox( coords ) {
+
+    var coordinateBox = $('<div/>',  {
+        'id': 'preview-coordinate-box',
+        'class': 'panel panel-default coordinate-box'
+    });
+    var innerCoordinateBox = $('<div/>', {
+        'class': 'panel-body',
+    });
+    innerCoordinateBox.append($('<p/>', {text: 'Latitude: '+coords.latitude}));
+    innerCoordinateBox.append($('<p/>', {text: 'Longitude: '+coords.longitude}));
+    
+    var editButton = $('<input/>', {
+        type: 'button',
+        'class': 'btn btn-default btn-xs pull-right',
+        value: 'Edit' });
+        
+    editButton.click( function () {
+        var box = $('#preview-coordinate-box');
+        box.html('');
+        
+        var innerBox = $('<div/>', {
+            'class': 'panel-body',
+        });
+        
+        var buildInput = function ( id, label, value ) {
+            var formGroup = $('<div/>', {'class': 'form-group'});
+            formGroup.append($('<label/>', {text: label}));
+            formGroup.append($('<input/>', {
+                id: id,
+                type: 'text',
+                value: value,
+                'class': 'form-control'
+            }));
+            return formGroup;
+        };
+        
+        innerBox.append( buildInput( 'lat-edit', 'Latitude', coords.latitude) );
+        innerBox.append( buildInput( 'long-edit', 'Longitude', coords.longitude) );
+        innerBox.append( buildButton( 'Stash these', 'btn-info', function() {
+            var la = $('#lat-edit').val();
+            var lo = $('#long-edit').val();
+            var newCoords = $.extend({}, coords, { latitude: la, longitude: lo });
+            renderNewStash( newCoords );
+        }));
+        box.append(innerBox);
+    });
+        
+    coordinateBox.append( editButton );
+    coordinateBox.append(innerCoordinateBox);
+
+    return coordinateBox;
 }
 
 function buildGoogleMap( params ) {
@@ -158,19 +209,6 @@ function buildGoogleMap( params ) {
     var container = $('<div/>', {'class': 'img-container'});
     container.append(image);
     return container;
-}
-
-function buildCoordinateBox( params ) {
-    
-    lat = params.latitude;
-    long = params.longitude;
-    
-    var panel = $('<div/>',  {'class': 'panel panel-default coordinate-box'} );
-    var d = $('<div/>',  {'class': 'panel-body'} );
-    d.append($('<p/>', {text: 'Latitude: '+lat}));
-    d.append($('<p/>', {text: 'Longitude: '+long}));
-    panel.append(d);
-    return panel;
 }
 
 // useful helpers

@@ -1,4 +1,18 @@
 
+// helpers
+function buildCoordinateBox( params ) {
+    
+    lat = params.latitude;
+    long = params.longitude;
+    
+    var panel = $('<div/>',  {'class': 'panel panel-default coordinate-box'} );
+    var d = $('<div/>',  {'class': 'panel-body'} );
+    d.append($('<p/>', {text: 'Latitude: '+lat}));
+    d.append($('<p/>', {text: 'Longitude: '+long}));
+    panel.append(d);
+    return panel;
+}
+
 // views
 window.stashViews = {
   debug: {
