@@ -21,7 +21,6 @@ function buildCodeForm( code ) {
         
     var container = $('<div/>');
     
-    
     container.append( $('<a/>', {
         href: buildQueryString( {code: code} ),
         text: "Try stash"
@@ -120,12 +119,12 @@ function decodeQuery( ) {
 
 function watchLocation( callback )
 {
-    navigator.geolocation.watchPosition(callback, showGeoError);
+    navigator.geolocation.watchPosition(callback, showGeoError, {enableHighAccuracy: true});
 }
 
 function getLocation( callback )
 {
-    navigator.geolocation.getCurrentPosition(callback, showGeoError);
+    navigator.geolocation.getCurrentPosition(callback, showGeoError, {enableHighAccuracy: true});
 }
 
 function showError( errorText ) {
@@ -158,6 +157,7 @@ function parseQueryString() {
     var params = {};
     var qstring = window.location.search.split('?')[1];
     if (qstring === undefined) return params;
+    qstring = qstring.split('/')[0];
     var strs = qstring.split('&');
     for (var i in strs) {
         var nameAndValue = strs[i].split('=');
