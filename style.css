@@ -1,3 +1,11 @@
-#error-box {
-    color: red;
+#main {
+    margin-top: 5%;
+}
+
+.img-container {
+    padding: 5%;
+}
+
+#tinyurl-form {
+    padding-top: 5%;
 }

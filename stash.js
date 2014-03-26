@@ -23,6 +23,8 @@ function buildCodeForm( code ) {
     
     container.append( $('<a/>', {
         href: buildQueryString( {code: code} ),
+        'class': 'btn btn-primary btn-block',
+        role: "button",
         text: "Try stash"
     }) );
     
@@ -30,17 +32,24 @@ function buildCodeForm( code ) {
         action: "http://tinyurl.com/create.php",
         method: "post",
         id: 'tinyurl-form' });
+    var formGroup = $('<div/>', {'class': 'form-group'});
+        
     var input = $('<textarea/>', {
         id: 'tinyurl-input',
-        cols: 60,
+        'class': 'form-control',
+        rows: 3,
         name: 'url' });
     input.val( urlWithoutQueryString() + buildQueryString( {code: code} ) );
-    form.append( input );
-    form.append('<br/>');
-    form.append( $('<input/>', {
+    formGroup.append( input );
+    form.append(formGroup);
+    
+    formGroup = $('<div/>', {'class': 'form-group'});
+    formGroup.append( $('<input/>', {
         type: 'submit',
         name: 'submit',
+        'class': 'btn btn-danger',
         value: "Submit to tinyurl.com" }));
+    form.append(formGroup);
     
     container.append(form);
     return container;
@@ -58,7 +67,8 @@ function renderNewStash() {
     
     var stashButton = $('<input/>', {
         type: 'button',
-        value: "stash" });
+        'class': 'btn btn-primary btn-block',
+        value: "Stash" });
         
     stashButton.click( function() { getLocation(doStash) } );
     container.append(stashButton);
@@ -92,9 +102,13 @@ function buildGoogleMap( params ) {
         sensor: "false"
     };
 
-    return $('<img/>', {
+    var image = $('<img/>', {
         src: "http://maps.googleapis.com/maps/api/staticmap"+buildQueryString(queryParams)
     });
+    
+    var container = $('<div/>', {'class': 'img-container'});
+    container.append(image);
+    return container;
 }
 
 function buildCoordinateBox( params ) {
@@ -102,10 +116,12 @@ function buildCoordinateBox( params ) {
     lat = params.latitude;
     long = params.longitude;
     
-    var d = $('<div/>');
+    var panel = $('<div/>',  {'class': 'panel panel-default coordinate-box'} );
+    var d = $('<div/>',  {'class': 'panel-body'} );
     d.append($('<p/>', {text: 'Latitude: '+lat}));
     d.append($('<p/>', {text: 'Longitude: '+long}));
-    return d;
+    panel.append(d);
+    return panel;
 }
 
 // useful helpers

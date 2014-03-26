@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <title>stash.js</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"/></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
 <link rel="stylesheet" type="text/css" href="style.css"/>
 <script src="stash.js"/></script>
 <script>
 $(document).ready(function() {
-    $("#tinyurl-form").hide();
+    $("#error-box").hide();
     
     try {
         data = decodeQuery();
@@ -35,9 +36,12 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<div id="error-box"></div>
+<div class="row-fluid" id="main">
+<div class="col-md-3 col-md-offset-2" id="container">
+<div id="error-box" class="alert alert-danger alert-dismissable"></div>
 <div id="content-box"></div>
-
+</div>
+</div>
 </body>
 </html>
 
