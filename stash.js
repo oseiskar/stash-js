@@ -1,29 +1,38 @@
 
-
 // actions
+function doStash( location, selectedMode ) {
 
-function doStash( location ) {
-
+    var coords  = location.coords;
+    if (selectedMode === undefined) selectedMode = window.defaultStashView;
     var container = $('#stash-box');
-    var coords = location.coords;
     
     container.html('');
-    
-    code = encode( { latitude: coords.latitude, longitude: coords.longitude } );
-    
-    var linkBox = $('<div/>');
-    
-    container.append(linkBox);
-    container.append( buildCodeForm( code ) );
-}
-
-function buildCodeForm( code ) {
+    code = encode( $.extend({}, coords, {mode: selectedMode}) );
         
-    var container = $('<div/>');
+    container.append($('<a/>', {id: 'stash'}));
+    
+    var dropdown = $('<select/>', {'class': 'form-control', id: 'mode-selector'});
+    
+    var formGroup = $('<div/>', {'class': 'form-group'});
+    formGroup.append($('<label/>', {text: 'Stash mode' }));
+    
+    for( var opt in window.stashViews ) {
+        var name = window.stashViews[opt].name;
+        $('<option/>', {value: opt, text: name}).appendTo(dropdown);
+    }
+    
+    dropdown.val( selectedMode );
+    
+    dropdown.change( function () {
+        var selected = $('#mode-selector').val();
+        doStash( location, selected );
+    } );
+    
+    formGroup.append(dropdown);
+    container.append(formGroup);
     
     container.append( buildLinkButton( {
         text: "Try stash",
-        id: 'stash',
         href: buildQueryString( {code: code} )
         }, 'btn-success') );
     
@@ -36,7 +45,7 @@ function buildCodeForm( code ) {
     var input = $('<textarea/>', {
         id: 'tinyurl-input',
         'class': 'form-control',
-        rows: 3,
+        rows: 4,
         name: 'url' });
     input.val( urlWithoutQueryString() + buildQueryString( {code: code} ) );
     formGroup.append( input );
@@ -56,7 +65,19 @@ function buildCodeForm( code ) {
 
 // views
 function beginStashed( stashedData ) {
-    watchLocation( function (loc) { renderStashed( stashedData, loc ); } );
+
+    var mode = stashedData.mode;
+    var view = window.stashViews[mode];
+    if (view)
+    {
+        $('body').addClass('stashed');
+        $('body').addClass(mode);
+        
+        watchLocation( function (loc) {
+            view.renderer( $('#content-box'), stashedData, loc.coords );
+        } );
+    }
+    else showError( "Did not recongize stash view" );
 }
 
 function beginNewStash() {
@@ -99,19 +120,6 @@ function renderNewStash( location ) {
     previewBox.append(buildGoogleMap( coords ));
     
     doStash(location);
-}
-
-function renderStashed( stashedData, currentPosition ) {
-    var coords = currentPosition.coords;
-    
-    var container = $('#content-box');
-    container.html('');
-    
-    container.append('<b>Current location</b>');
-    container.append( buildCoordinateBox( coords ) );
-    
-    container.append('<b>Stashed location</b>');
-    container.append( buildCoordinateBox( stashedData ) );
 }
 
 function buildButton( text, classes, action ) {
@@ -166,12 +174,15 @@ function buildCoordinateBox( params ) {
 }
 
 // useful helpers
-function encode( obj ) { return btoa(JSON.stringify(obj)); }
+function encode( obj ) {
+    return btoa(JSON.stringify( {la: obj.latitude, lo: obj.longitude, mo: obj.mode } ));
+}
 
 function decodeQuery( ) {
     var code = parseQueryString().code;
     if (code === undefined) return undefined;
-    return JSON.parse(atob(code));
+    var obj = JSON.parse(atob(code));
+    return { latitude: obj.la, longitude: obj.lo, mode: obj.mo };
 }
 
 function watchLocation( callback )
