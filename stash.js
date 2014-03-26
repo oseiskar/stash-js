@@ -4,19 +4,10 @@
 
 function doStash( location ) {
 
-    var container = $('#content-box');
+    var container = $('#stash-box');
     var coords = location.coords;
     
     container.html('');
-    container.append( $('<a/>', {
-        href: '/',
-        'class': 'btn btn-block btn-default btn-and-space',
-        role: "button",
-        text: "Back"
-    }) );
-    
-    container.append(buildCoordinateBox( coords ));
-    container.append(buildGoogleMap( coords ));
     
     code = encode( { latitude: coords.latitude, longitude: coords.longitude } );
     
@@ -32,7 +23,7 @@ function buildCodeForm( code ) {
     
     container.append( $('<a/>', {
         href: buildQueryString( {code: code} ),
-        'class': 'btn btn-primary btn-block btn-and-space',
+        'class': 'btn btn-primary btn-block btn-success btn-and-space',
         role: "button",
         text: "Try stash"
     }) );
@@ -65,12 +56,35 @@ function buildCodeForm( code ) {
 }
 
 // views
+function beginMenu() {
+    
+    var container = $('#content-box');
+    container.html('');
+    
+    var button = $('<input/>', {
+        type: 'button',
+        'class': 'btn btn-primary btn-block btn-and-space',
+        value: "Stash here" });
+        
+    button.click( function() { beginNewStash() } );
+    container.append(button);
+}
+
 function beginStashed( stashedData ) {
     watchLocation( function (loc) { renderStashed( stashedData, loc ); } );
 }
 
 function beginNewStash() {
-    watchLocation( function (loc) { renderNewStash( loc ); } );
+    getLocation( function (loc) { renderNewStash( loc ); } );
+}
+
+function buildButton( text, classes, action ) {
+    var button = $('<input/>', {
+        type: 'button',
+        'class': 'btn btn-block btn-and-space '+classes,
+        value: text });
+    button.click( action );
+    return button;
 }
 
 function renderNewStash( location ) {
@@ -80,13 +94,9 @@ function renderNewStash( location ) {
     var container = $('#content-box');
     container.html('');
     
-    var stashButton = $('<input/>', {
-        type: 'button',
-        'class': 'btn btn-primary btn-block btn-and-space',
-        value: "Stash" });
-        
-    stashButton.click( function() { stopWatching(); getLocation(doStash) } );
-    container.append(stashButton);
+    container.append(buildButton( 'Refresh', 'btn-default', function() {
+        beginNewStash();
+    }));
     
     var previewBox = $('<div/>', { id: 'result-box' });
     container.append(previewBox);
@@ -94,6 +104,7 @@ function renderNewStash( location ) {
     previewBox.html(buildCoordinateBox( coords ));
     previewBox.append(buildGoogleMap( coords ));
     
+    doStash(location);
 }
 
 function renderStashed( stashedData, currentPosition ) {

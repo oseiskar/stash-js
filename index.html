@@ -20,7 +20,7 @@ $(document).ready(function() {
         else
         {
             if (data === undefined) {
-                beginNewStash();
+                beginMenu();
             }
             else {
                 beginStashed( data );
@@ -37,10 +37,9 @@ $(document).ready(function() {
 </head>
 <body>
 <div class="row-fluid" id="main">
-<div class="col-md-3 col-md-offset-2" id="container">
 <div id="error-box" class="alert alert-danger alert-dismissable"></div>
-<div id="content-box"></div>
-</div>
+<div id="content-box" class="col-md-4 my-box"></div>
+<div id="stash-box" class="col-md-4 my-box"></div>
 </div>
 </body>
 </html>
