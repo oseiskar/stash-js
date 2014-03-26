@@ -21,12 +21,11 @@ function buildCodeForm( code ) {
         
     var container = $('<div/>');
     
-    container.append( $('<a/>', {
-        href: buildQueryString( {code: code} ),
-        'class': 'btn btn-primary btn-block btn-success btn-and-space',
-        role: "button",
-        text: "Try stash"
-    }) );
+    container.append( buildLinkButton( {
+        text: "Try stash",
+        id: 'stash',
+        href: buildQueryString( {code: code} )
+        }, 'btn-success') );
     
     var form = $('<form/>', {
         action: "http://tinyurl.com/create.php",
@@ -56,52 +55,47 @@ function buildCodeForm( code ) {
 }
 
 // views
-function beginMenu() {
-    
-    var container = $('#content-box');
-    container.html('');
-    
-    var button = $('<input/>', {
-        type: 'button',
-        'class': 'btn btn-primary btn-block btn-and-space',
-        value: "Stash here" });
-        
-    button.click( function() { beginNewStash() } );
-    container.append(button);
-}
-
 function beginStashed( stashedData ) {
     watchLocation( function (loc) { renderStashed( stashedData, loc ); } );
 }
 
 function beginNewStash() {
-    getLocation( function (loc) { renderNewStash( loc ); } );
-}
-
-function buildButton( text, classes, action ) {
-    var button = $('<input/>', {
-        type: 'button',
-        'class': 'btn btn-block btn-and-space '+classes,
-        value: text });
-    button.click( action );
-    return button;
-}
-
-function renderNewStash( location ) {
-
-    var coords = location.coords;
     
     var container = $('#content-box');
     container.html('');
     
-    container.append(buildButton( 'Refresh', 'btn-default', function() {
-        beginNewStash();
+    var stashButton = buildLinkButton(
+        {text: 'Stash', href: '#stash', id: "stash-button"},
+        'btn-primary' );
+    stashButton.click( function () {
+        $('#stash-box').show();
+        $('#stash-button').hide();
+    } );
+    
+    container.append(stashButton);
+    container.append($('<div/>', {id: 'result-box'}));
+    
+    getLocation( function (loc) {
+        renderNewStash( loc );
+    } );
+    
+    $('#stash-box').hide();
+}
+
+function renderNewStash( location ) {
+
+    var previewBox = $('#result-box');
+    previewBox.html('');
+    
+    previewBox.append(buildButton( 'Refresh', 'btn-default', function() {
+        getLocation( function (loc) {
+        renderNewStash( loc );
+        } );
     }));
     
-    var previewBox = $('<div/>', { id: 'result-box' });
-    container.append(previewBox);
+    var coords = location.coords;
     
-    previewBox.html(buildCoordinateBox( coords ));
+    previewBox.append(buildCoordinateBox( coords ));
     previewBox.append(buildGoogleMap( coords ));
     
     doStash(location);
@@ -118,6 +112,22 @@ function renderStashed( stashedData, currentPosition ) {
     
     container.append('<b>Stashed location</b>');
     container.append( buildCoordinateBox( stashedData ) );
+}
+
+function buildButton( text, classes, action ) {
+    var button = $('<input/>', {
+        type: 'button',
+        'class': 'btn btn-block btn-and-space '+classes,
+        value: text });
+    button.click( action );
+    return button;
+}
+
+function buildLinkButton( params, classes ) {
+    return $('<a/>', $.extend({
+        'class': 'btn btn-primary btn-block btn-and-space '+classes,
+        role: "button",
+    },params));
 }
 
 function buildGoogleMap( params ) {
