@@ -13,3 +13,13 @@
 .my-box {
     max-width: 350px;
 }
+
+.command {
+    margin: 20%;
+    font-size: 20pt
+}
+
+body.cardinal {
+    background-color: black;
+    color: white;
+}

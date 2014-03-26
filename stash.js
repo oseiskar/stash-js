@@ -185,10 +185,18 @@ function decodeQuery( ) {
     return { latitude: obj.la, longitude: obj.lo, mode: obj.mo };
 }
 
+commonGeoOptions = {
+    enableHighAccuracy: true,
+    timeout:60000
+};
+
+
 function watchLocation( callback )
 {
-   window.watchId = navigator.geolocation.watchPosition(callback, showGeoError, {enableHighAccuracy: true});
+    var opts = $.extend({}, commonGeoOptions, { maximumAge: 5000 });
+    window.watchId = navigator.geolocation.watchPosition( callback, showGeoError, opts );
 }
+
 
 function stopWatching() {
     navigator.geolocation.clearWatch(window.watchId);
@@ -196,7 +204,7 @@ function stopWatching() {
 
 function getLocation( callback )
 {
-    navigator.geolocation.getCurrentPosition(callback, showGeoError, {enableHighAccuracy: true});
+    navigator.geolocation.getCurrentPosition(callback, showGeoError, commonGeoOptions);
 }
 
 function showError( errorText ) {
@@ -252,3 +260,43 @@ function urlWithoutQueryString() {
     var url = window.location;
     return url.protocol + "//" + url.host + url.pathname
 }
+
+// coordinate helpers
+/*function degToRad( deg ) {
+    return deg / 180.0 * Math.PI;
+}
+
+function vecMult( v, scalar ) {
+    return { x: v.x*scalar, y: v.y*scalar, z: v.z*scalar };
+}
+
+function vecPlus( a, b ) {
+    return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z }
+}
+
+function vecMinus( a, b ) { return vecPlus(a, vecMult(b, -1.0)); }
+function vecDot( a, b ) { return a.x*b.x + a.y*b.y + a.z*b.z; }
+function vecLength( v ) { return Math.sqrt(vecDot(v,v)); }
+function vecDirection( v ) { return vecMult( v, 1.0/vecLength( v ) ); }
+
+function getGlobalXYZ( coords ) {
+    lat = degToRad(coords.latitude);
+    long = degToRad(coords.longitude);
+    
+    var R = 6371000.0;
+    
+    return {
+        x: Math.sin(long)*Math.cos(lat) * R,
+        y: Math.cos(long)*Math.cos(lat) * R,
+        z: Math.sin(lat) * R };
+}
+
+function getLocalCoordinateSystem( coords ) {
+    
+    var pos = getGlobalXYZ( coords );
+    var northPole = getGlobalXYZ( { latitude: 90, longitude: 0 } );
+    var toNorthPole = vecMinus( northPole, coords );
+    return {
+        north: vecDirection(toNorthPole) // TODO
+    };
+}*/
