@@ -4,9 +4,18 @@
 
 function doStash( location ) {
 
-    var container = $('#result-box');
+    var container = $('#content-box');
     var coords = location.coords;
-    container.html(buildCoordinateBox( coords ));
+    
+    container.html('');
+    container.append( $('<a/>', {
+        href: '/',
+        'class': 'btn btn-block btn-default btn-and-space',
+        role: "button",
+        text: "Back"
+    }) );
+    
+    container.append(buildCoordinateBox( coords ));
     container.append(buildGoogleMap( coords ));
     
     code = encode( { latitude: coords.latitude, longitude: coords.longitude } );
@@ -23,7 +32,7 @@ function buildCodeForm( code ) {
     
     container.append( $('<a/>', {
         href: buildQueryString( {code: code} ),
-        'class': 'btn btn-primary btn-block',
+        'class': 'btn btn-primary btn-block btn-and-space',
         role: "button",
         text: "Try stash"
     }) );
@@ -60,20 +69,31 @@ function beginStashed( stashedData ) {
     watchLocation( function (loc) { renderStashed( stashedData, loc ); } );
 }
 
-function renderNewStash() {
+function beginNewStash() {
+    watchLocation( function (loc) { renderNewStash( loc ); } );
+}
 
+function renderNewStash( location ) {
+
+    var coords = location.coords;
+    
     var container = $('#content-box');
     container.html('');
     
     var stashButton = $('<input/>', {
         type: 'button',
-        'class': 'btn btn-primary btn-block',
+        'class': 'btn btn-primary btn-block btn-and-space',
         value: "Stash" });
         
-    stashButton.click( function() { getLocation(doStash) } );
+    stashButton.click( function() { stopWatching(); getLocation(doStash) } );
     container.append(stashButton);
     
-    container.append($('<div/>', { id: 'result-box' }));
+    var previewBox = $('<div/>', { id: 'result-box' });
+    container.append(previewBox);
+    
+    previewBox.html(buildCoordinateBox( coords ));
+    previewBox.append(buildGoogleMap( coords ));
+    
 }
 
 function renderStashed( stashedData, currentPosition ) {
@@ -135,7 +155,11 @@ function decodeQuery( ) {
 
 function watchLocation( callback )
 {
-    navigator.geolocation.watchPosition(callback, showGeoError, {enableHighAccuracy: true});
+   window.watchId = navigator.geolocation.watchPosition(callback, showGeoError, {enableHighAccuracy: true});
+}
+
+function stopWatching() {
+    navigator.geolocation.clearWatch(window.watchId);
 }
 
 function getLocation( callback )

@@ -3,9 +3,9 @@
 }
 
 .img-container {
-    padding: 5%;
+    margin: 3%;
 }
 
-#tinyurl-form {
-    padding-top: 5%;
+.btn-and-space {
+    margin-bottom: 10px;
 }
