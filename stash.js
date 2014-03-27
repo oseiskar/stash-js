@@ -73,6 +73,13 @@ function doStash( coords, selectedMode ) {
     }
 }
 
+function hidePreview() {
+    var box = $('#preview-frame-box');
+    box.html('');
+    box.hide();
+    $('.preview-button').show();
+}
+
 function showPreview( coords, selectedMode ) {
     
     var container = $('#preview-frame-box');
@@ -82,6 +89,9 @@ function showPreview( coords, selectedMode ) {
     var codeDebug = encode( $.extend({}, coords, {mode: 'bothOnMap'}) );
     
     container.html('');
+    
+    container.append( buildButton( 'Hide preview', '', hidePreview ) );
+    
     container.append($('<b/>', { text: 'Preview' } ));
     container.append($('<iframe/>', {
         width: '100%',
