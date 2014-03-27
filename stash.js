@@ -190,8 +190,7 @@ function renderNewStash( coords ) {
         });
         leftBtnGroup.html(buildButton( 'Show on map', 'btn-default', function() {
             mapBox.html('');
-            mapBox.append(buildGoogleMap( coords ));
-            mapBox.append("fooasdfobar");
+            mapBox.append(buildGoogleMap( window.lastWatchCoords ));
         } ));
         rightBtnGroup.html(buildButton( 'Stop watch', 'btn-primary', function() {
             stopWatching( watchId );
