@@ -140,7 +140,9 @@ function beginNewStash() {
     stashButton.click( showStashBox );
     
     container.append(stashButton);
-    container.append($('<div/>', {id: 'result-box'}));
+    var resultBox = $('<div/>', {id: 'result-box'});
+    container.append(resultBox);
+    resultBox.append(buildLoadingIndicator());
     
     getLocation( function (loc) {
         renderNewStash( loc.coords );
@@ -191,7 +193,7 @@ function renderNewStash( coords ) {
             mapBox.append(buildGoogleMap( coords ));
             mapBox.append("fooasdfobar");
         } ));
-        rightBtnGroup.html(buildButton( 'Stop watch', 'btn-success', function() {
+        rightBtnGroup.html(buildButton( 'Stop watch', 'btn-primary', function() {
             stopWatching( watchId );
             renderNewStash( window.lastWatchCoords );
             $('#stash-box').show();
@@ -200,6 +202,14 @@ function renderNewStash( coords ) {
     btnGroup.append(rightBtnGroup);
     
     doStash(coords);
+}
+
+function buildLoadingIndicator() {
+    var container = $('<div/>', {'class': 'loading-outer'});
+    container.append( $('<div/>', {
+        'class': 'loading-inner',
+        text: 'Loading...' }) );
+    return container;
 }
 
 function buildButton( text, classes, action ) {

@@ -27,3 +27,13 @@ body.cardinal {
 #preview-frame-box {
     max-width: 400px;
 }
+
+.loading-inner {
+    color: gray;
+    margin: 20px;
+}
+
+.loading-outer {
+    width: 100%;
+    text-align: center;
+}
