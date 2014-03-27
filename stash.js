@@ -2,6 +2,7 @@
 // actions
 function doStash( coords, selectedMode ) {
 
+    if (selectedMode === undefined) selectedMode = window.lastSelected;
     if (selectedMode === undefined) selectedMode = window.defaultStashView;
     var container = $('#stash-box');
     
@@ -24,6 +25,7 @@ function doStash( coords, selectedMode ) {
     
     dropdown.change( function () {
         var selected = $('#mode-selector').val();
+        window.lastSelected = selected;
         doStash( coords, selected );
     } );
     
@@ -34,6 +36,13 @@ function doStash( coords, selectedMode ) {
         text: "Try stash",
         href: buildQueryString( {code: code} )
     }, 'btn-success') );
+     
+    if ($('#preview-frame-box').is(':hidden')) {
+        container.append(buildButton( 'Preview', 'btn-info preview-button', function() {
+            showPreview( coords, selectedMode );
+            $('.preview-button').hide();
+        }));
+    }
     
     var form = $('<form/>', {
         action: "http://tinyurl.com/create.php",
@@ -59,7 +68,37 @@ function doStash( coords, selectedMode ) {
     form.append(formGroup);
     
     container.append(form);
-    return container;
+    if ($('#preview-frame-box').is(':visible')) {
+        showPreview( coords, selectedMode );
+    }
+}
+
+function showPreview( coords, selectedMode ) {
+    
+    var container = $('#preview-frame-box');
+    container.show();
+    
+    var codeActual = encode( $.extend({}, coords, {mode: selectedMode}) );
+    var codeDebug = encode( $.extend({}, coords, {mode: 'bothOnMap'}) );
+    
+    container.html('');
+    container.append($('<b/>', { text: 'Preview' } ));
+    container.append($('<iframe/>', {
+        width: '100%',
+        height: '350px',
+        seamless: true,
+        src: buildQueryString( {code: codeActual} )
+    }));
+    
+    if (codeActual != codeDebug) {
+        container.append($('<b/>', { text: 'Debug' } ));
+        container.append($('<iframe/>', {
+            width: '100%',
+            height: '400px',
+            seamless: true,
+            src: buildQueryString( {code: codeDebug} )
+        }));
+    }
 }
 
 // views
@@ -87,10 +126,8 @@ function beginNewStash() {
     var stashButton = buildLinkButton(
         {text: 'Stash', href: '#stash', id: "stash-button"},
         'btn-primary' );
-    stashButton.click( function () {
-        $('#stash-box').show();
-        $('#stash-button').hide();
-    } );
+        
+    stashButton.click( showStashBox );
     
     container.append(stashButton);
     container.append($('<div/>', {id: 'result-box'}));
@@ -100,6 +137,12 @@ function beginNewStash() {
     } );
     
     $('#stash-box').hide();
+    $('#preview-frame-box').hide();
+}
+
+function showStashBox() {
+    $('#stash-box').show();
+    $('#stash-button').hide();
 }
 
 function renderNewStash( coords ) {
@@ -107,10 +150,9 @@ function renderNewStash( coords ) {
     var previewBox = $('#result-box');
     previewBox.html('');
     
-    previewBox.append(buildButton( 'Refresh', 'btn-default', function() {
-        getLocation( function (loc) {
-        renderNewStash( loc.coords );
-        } );
+    previewBox.append(buildButton( 'Refresh location', 'btn-default', function() {
+        $('#preview-frame-box').html('');
+        getLocation( function (loc) { renderNewStash( loc.coords ); } );
     }));
     
     previewBox.append(buildEditableCoordinateBox(coords));
@@ -179,6 +221,7 @@ function buildEditableCoordinateBox( coords ) {
             var lo = $('#long-edit').val();
             var newCoords = $.extend({}, coords, { latitude: la, longitude: lo });
             renderNewStash( newCoords );
+            showStashBox();
         }));
         box.append(innerBox);
     });

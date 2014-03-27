@@ -23,3 +23,7 @@ body.cardinal {
     background-color: black;
     color: white;
 }
+
+#preview-frame-box {
+    max-width: 400px;
+}
