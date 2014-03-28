@@ -277,11 +277,12 @@ function buildEditableCoordinateBox( coords, editable ) {
                 return formGroup;
             };
             
-            innerBox.append( buildInput( 'lat-edit', 'Latitude', coords.latitude) );
-            innerBox.append( buildInput( 'long-edit', 'Longitude', coords.longitude) );
+            var value = coords.latitude+", "+coords.longitude
+            innerBox.append( buildInput( 'lat-long-edit', 'Latitude, Longitude', value) );
             innerBox.append( buildButton( 'Stash these', 'btn-info', function() {
-                var la = $('#lat-edit').val();
-                var lo = $('#long-edit').val();
+                var lalo = $('#lat-long-edit').val().split(',');
+                var la = $.trim(lalo[0]);
+                var lo = $.trim(lalo[1]);
                 var newCoords = $.extend({}, coords, { latitude: la, longitude: lo });
                 renderNewStash( newCoords );
                 showStashBox();
