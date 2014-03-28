@@ -48,12 +48,45 @@ window.stashViews = {
         elem.html('');
         
         var distance = getDistanceBetween( stashed, current );
-        console.log(distance);
         distance = Math.round(distance).toString() + " m";
         
         elem.append($('<div/>', {
             'class': 'command',
             text: distance }));
+    }
+  },
+  
+  headonly: {
+    name: "Heading only",
+    renderer: function ( elem, stashed, current ) {
+        elem.html('');
+        
+        var head = getHeading( current, stashed );
+        head = Math.round(head).toString();
+        
+        elem.append($('<div/>', {
+            'class': 'command',
+            text: head }));
+    }
+  },
+  
+  disthead: {
+    name: "Distance and heading",
+    renderer: function ( elem, stashed, current ) {
+        elem.html('');
+        
+        var dist = getDistanceBetween( stashed, current );
+        var head = getHeading( current, stashed );
+        dist = Math.round(dist).toString() + ' m';
+        head = Math.round(head).toString() + ' °';
+        
+        elem.append($('<div/>', {
+            'class': 'command' }).append(
+                $('<p/>', {text: dist})
+            ).append(
+                $('<p/>', {text: head})
+            )
+        )
     }
   },
   
@@ -99,12 +132,16 @@ window.stashViews = {
   }
 };
 
-window.defaultStashView = 'debug';
+window.defaultStashView = 'bothOnMap';
 
 
 // coordinate helpers
-function degToRad( deg ) {
-    return deg / 180.0 * Math.PI;
+function degToRad( deg ) { return deg / 180.0 * Math.PI; }
+function radToDeg( rad ) { return rad / Math.PI * 180.0; }
+function fmod( x, mod ) {
+    while (x < 0.0) x += mod;
+    while (x >= mod) x -= mod;
+    return x;
 }
 
 function vecMult( v, scalar ) {
@@ -112,13 +149,25 @@ function vecMult( v, scalar ) {
 }
 
 function vecPlus( a, b ) {
-    return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z }
+    return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
 }
 
 function vecMinus( a, b ) { return vecPlus(a, vecMult(b, -1.0)); }
 function vecDot( a, b ) { return a.x*b.x + a.y*b.y + a.z*b.z; }
 function vecLength( v ) { return Math.sqrt(vecDot(v,v)); }
 function vecDirection( v ) { return vecMult( v, 1.0/vecLength( v ) ); }
+function vecCross( v1, v2 ) {
+    return {
+        x:   ( (v1.y * v2.z) - (v1.z * v2.y) ),
+        y: - ( (v1.x * v2.z) - (v1.z * v2.x) ),
+        z:   ( (v1.x * v2.y) - (v1.y * v2.x) )
+    };
+}
+
+function vecProjectToPlane( vec, planeNormal ) {
+    var unitNormal = vecDirection( planeNormal );
+    return vecMinus( vec, vecMult( unitNormal, vecDot( vec, unitNormal ) ) );
+}
 
 function getGlobalXYZ( coords ) {
     lat = degToRad(coords.latitude);
@@ -127,8 +176,8 @@ function getGlobalXYZ( coords ) {
     var R = 6371000.0;
     
     return {
-        x: Math.sin(long)*Math.cos(lat) * R,
-        y: Math.cos(long)*Math.cos(lat) * R,
+        x: Math.cos(long)*Math.cos(lat) * R,
+        y: Math.sin(long)*Math.cos(lat) * R,
         z: Math.sin(lat) * R };
 }
 
@@ -157,12 +206,34 @@ function getCardinalDirection( from, to ) {
         return dir;
 }
 
-/*function getLocalCoordinateSystem( coords ) {
+function getHeading( from, to ) {
+
+    var local = getLocalCoordinateSystem( from );
+    
+    var dirVec = vecMinus( getGlobalXYZ( to ), local.pos );
+    var tangent = vecProjectToPlane( dirVec, local.up );
+    
+    var distWE = vecDot( tangent, local.east );
+    var distSN = vecDot( tangent, local.north );
+    var dirRad = Math.atan2( distSN, distWE );
+    
+    return fmod( -(radToDeg( dirRad ) - 90), 360);
+}
+
+function getLocalCoordinateSystem( coords ) {
     
     var pos = getGlobalXYZ( coords );
     var northPole = getGlobalXYZ( { latitude: 90, longitude: 0 } );
-    var toNorthPole = vecMinus( northPole, coords );
+    var toNorthPole = vecMinus( northPole, pos );
+    
+    var east = vecDirection( vecCross( toNorthPole, pos ) );
+    var north = vecDirection( vecCross( pos, east ) );
+    var up = vecDirection( pos );
+    
     return {
-        north: vecDirection(toNorthPole) // TODO
+        pos: pos,
+        north: north,
+        east: east,
+        up: up
     };
-}*/
+}
