@@ -29,9 +29,14 @@ p {
     padding: 8px 15px 8px 15px;
 }
 
-body.cardinal, body.binheading {
+body.cardinal, body.binheading, body.binhd {
     background-color: black;
     color: white;
+}
+
+.binary-d {
+    font-size: 14pt;
+    font-family: courier;
 }
 
 #preview-frame-box {

@@ -47,10 +47,14 @@ window.stashViews = {
     renderer: function ( elem, stashed, current ) {
         elem.html('');
         
-        var distance = getDistanceBetween( stashed, current );
-        distance = Math.round(distance).toString() + " m";
+        console.log(current);
         
-        elem.append($('<div/>', {'class': 'command', text: distance }));
+        var distance = getDistanceBetween( stashed, current );
+        distance = Math.round(distance).toString();
+        distance = distance + " &plusmn; " + current.accuracy;
+        distance = distance + " m";
+        
+        elem.append($('<div/>', {'class': 'command', html: distance}));
     }
   },
   
@@ -73,14 +77,34 @@ window.stashViews = {
         
         var dist = getDistanceBetween( stashed, current );
         var head = getHeading( current, stashed );
-        dist = Math.round(dist).toString() + ' m';
-        head = Math.round(head).toString() + ' °';
+        dist = Math.round(dist).toString() + " &plusmn; " + current.accuracy + ' m';
+        head = Math.round(head).toString() + '&deg;';
         
         elem.append($('<div/>', {
             'class': 'command' }).append(
-                $('<p/>', {text: dist})
+                $('<p/>', {html: dist})
             ).append(
-                $('<p/>', {text: head})
+                $('<p/>', {html: head})
+            )
+        )
+    }
+  },
+  
+  binhd: {
+    name: "Binary dist. and heading",
+    renderer: function ( elem, stashed, current ) {
+        elem.html('');
+        
+        var dist = getDistanceBetween( stashed, current );
+        var head = getHeading( current, stashed );
+        dist = Math.round(dist).toString(2);
+        head = Math.round(head).toString(2);
+        
+        elem.append($('<div/>', {
+            'class': 'command' }).append(
+                $('<p/>', {html: head})
+            ).append(
+                $('<p/>', {'class': 'binary-d', html: dist})
             )
         )
     }
