@@ -6,6 +6,11 @@
     margin: 3%;
 }
 
+p {
+    margin: 0;
+    padding: 0;
+}
+
 .btn-and-space {
     margin-bottom: 10px;
 }
@@ -15,8 +20,13 @@
 }
 
 .command {
-    margin: 20%;
+    margin-top: 40%;
+    text-align: center;
     font-size: 20pt
+}
+
+.panel-body {
+    padding: 8px 15px 8px 15px;
 }
 
 body.cardinal {

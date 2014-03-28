@@ -93,22 +93,23 @@ function showPreview( coords, selectedMode ) {
     container.append( buildButton( 'Hide preview', '', hidePreview ) );
     
     container.append($('<b/>', { text: 'Preview' } ));
-    container.append($('<iframe/>', {
-        width: '100%',
-        height: '350px',
-        seamless: true,
-        src: buildQueryString( {code: codeActual} )
-    }));
-    
     if (codeActual != codeDebug) {
-        container.append($('<b/>', { text: 'Debug' } ));
         container.append($('<iframe/>', {
             width: '100%',
-            height: '400px',
+            height: '350px',
             seamless: true,
-            src: buildQueryString( {code: codeDebug} )
+            src: buildQueryString( {code: codeActual} )
         }));
+        
+        container.append($('<b/>', { text: 'Debug' } ));
     }
+    
+    container.append($('<iframe/>', {
+        width: '100%',
+        height: '500px',
+        seamless: true,
+        src: buildQueryString( {code: codeDebug} )
+    }));
 }
 
 // views
@@ -121,8 +122,18 @@ function beginStashed( stashedData ) {
         $('body').addClass('stashed');
         $('body').addClass(mode);
         
+        var el = $('#content-box');
+        el.html(buildLoadingIndicator());
+        
+        var firstRender = true;
         watchLocation( function (loc) {
-            view.renderer( $('#content-box'), stashedData, loc.coords );
+            if (firstRender) {
+                el.html('');
+                if (view.initializer !== undefined)
+                    view.initializer( el, stashedData, loc.coords );
+            }
+            view.renderer( el, stashedData, loc.coords );
+            firstRender = false;
         } );
     }
     else showError( "Did not recongize stash view" );
@@ -167,6 +178,7 @@ function renderNewStash( coords ) {
     var leftBtnGroup = $('<div/>', {'class': 'btn-group'} );
     leftBtnGroup.append(buildButton( 'Refresh location', 'btn-default', function() {
         $('#preview-frame-box').html('');
+        leftBtnGroup.addClass('disabled');
         getLocation( function (loc) { renderNewStash( loc.coords ); } );
     }));
     btnGroup.append(leftBtnGroup);

@@ -5,12 +5,25 @@ function buildCoordinateBox( params ) {
     lat = params.latitude;
     long = params.longitude;
     
-    var panel = $('<div/>',  {'class': 'panel panel-default coordinate-box'} );
-    var d = $('<div/>',  {'class': 'panel-body'} );
-    d.append($('<p/>', {text: 'Latitude: '+lat}));
-    d.append($('<p/>', {text: 'Longitude: '+long}));
-    panel.append(d);
-    return panel;
+    return $('<div/>', {'class': 'panel panel-default coordinate-box'} ).append(
+        $('<div/>',  {'class': 'panel-body'}).append(
+            $('<p/>', {text: 'Latitude: '+lat} )
+        ).append(
+            $('<p/>', {text: 'Longitude: '+long})
+        )
+    );
+}
+
+function buildGoogleMapWithTwoPoints( center, other ) {
+    return buildGoogleMap(
+        $.extend({}, center, {
+            extraMarker: {
+                color: 'blue',
+                latitude: other.latitude,
+                longitude: other.longitude
+            }
+        })
+    );
 }
 
 // views
@@ -61,20 +74,27 @@ window.stashViews = {
   
   bothOnMap: {
     name: "Show on map",
+    initializer: function ( elem, stashed, current ) {
+    
+        elem.append(
+            $('<div/>', {id: 'map-box'} ).append(
+                buildGoogleMapWithTwoPoints( stashed, current )
+            )
+        );
+        elem.append( $('<div/>', {id: 'coord-box'} ) );
+        
+    },
     renderer: function ( elem, stashed, current ) {
     
-        elem.html('');
-        
-        elem.append( buildGoogleMap(
-            $.extend({}, stashed, {
-                extraMarker: {
-                    color: 'blue',
-                    latitude: current.latitude,
-                    longitude: current.longitude
-                }
-            }))
+        $('#coord-box').append( 
+            buildButton( 'Refresh map', 'btn-primary', function () {
+                $('#map-box').html(
+                    buildGoogleMapWithTwoPoints( stashed, current )
+                )
+            })
+        ).append(
+            buildCoordinateBox(current)
         );
-        
     }
   }
 };
