@@ -99,6 +99,10 @@ window.stashViews = {
         var head = getHeading( current, stashed );
         dist = Math.round(dist).toString(2);
         head = Math.round(head).toString(2);
+        /*head = head.replace(/1/g, '&#9787;');
+        head = head.replace(/0/g, '&#9786;');
+        dist = dist.replace(/1/g, '&#9733;');
+        dist = dist.replace(/0/g, '&#9734;');*/
         
         elem.append($('<div/>', {
             'class': 'command' }).append(
@@ -147,6 +151,7 @@ window.stashViews = {
     },
     renderer: function ( elem, stashed, current ) {
     
+        $('#coord-box').html('');
         $('#coord-box').append( 
             buildButton( 'Refresh map', 'btn-primary', function () {
                 $('#map-box').html(
