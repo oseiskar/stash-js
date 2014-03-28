@@ -29,7 +29,7 @@ p {
     padding: 8px 15px 8px 15px;
 }
 
-body.cardinal {
+body.cardinal, body.binheading {
     background-color: black;
     color: white;
 }

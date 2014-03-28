@@ -50,9 +50,7 @@ window.stashViews = {
         var distance = getDistanceBetween( stashed, current );
         distance = Math.round(distance).toString() + " m";
         
-        elem.append($('<div/>', {
-            'class': 'command',
-            text: distance }));
+        elem.append($('<div/>', {'class': 'command', text: distance }));
     }
   },
   
@@ -64,9 +62,7 @@ window.stashViews = {
         var head = getHeading( current, stashed );
         head = Math.round(head).toString();
         
-        elem.append($('<div/>', {
-            'class': 'command',
-            text: head }));
+        elem.append($('<div/>', { 'class': 'command', text: head }));
     }
   },
   
@@ -99,9 +95,17 @@ window.stashViews = {
         var dir = getCardinalDirection( currentCoords, stashedCoords );
         var command = "walk "+dir;
         
-        elem.append($('<div/>', {
-            'class': 'command',
-            text: command }));
+        elem.append($('<div/>', {'class': 'command', text: command }));
+    }
+  },
+  
+  binheading: {
+    name: "Binary heading",
+    renderer: function ( elem, stashed, current ) {
+    
+        elem.html('');
+        var head = Math.round(getHeading( current, stashed )).toString(2);
+        elem.append($('<div/>', {'class': 'command', text: head }));
     }
   },
   
