@@ -8,8 +8,6 @@ function doStash( coords, selectedMode ) {
     
     container.html('');
     code = encode( $.extend({}, coords, {mode: selectedMode}) );
-        
-    container.append($('<a/>', {id: 'stash'}));
     
     var dropdown = $('<select/>', {'class': 'form-control', id: 'mode-selector'});
     
