@@ -1,46 +1,20 @@
-#main {
-    margin-top: 5%;
-}
 
-.img-container {
-    margin: 3%;
-}
+/* Custom classes */
+.img-container { margin: 3%; }
 
-p {
-    margin: 0;
-    padding: 0;
-}
+.btn-and-space { margin-bottom: 10px; }
 
-.btn-and-space {
-    margin-bottom: 10px;
-}
-
-.my-box {
+.limited-width {
     max-width: 350px;
-}
-
-.command {
-    margin-top: 40%;
-    text-align: center;
-    font-size: 20pt
-}
-
-.panel-body {
-    padding: 8px 15px 8px 15px;
-}
-
-body.cardinal, body.binheading, body.binhd {
-    background-color: black;
-    color: white;
-}
-
-.binary-d {
-    font-size: 14pt;
-    font-family: courier;
+    margin-bottom: 10%;
 }
 
 #preview-frame-box {
     max-width: 400px;
+}
+
+#inner-stash-box {
+    margin-bottom: 10%;
 }
 
 .loading-inner {
@@ -51,4 +25,56 @@ body.cardinal, body.binheading, body.binhd {
 .loading-outer {
     width: 100%;
     text-align: center;
+}
+
+.explain-box {
+    margin-bottom: 1em;
+}
+
+.explain-label {
+    font-size: 30pt;
+    margin-right: 15px;
+    float: left;
+}
+
+/* Custom classes for puzzles */
+
+.command {
+    margin-top: 40%;
+    text-align: center;
+    font-size: 20pt
+}
+
+body.cardinal, body.binheading, body.binhd {
+    background-color: black;
+    color: white;
+}
+
+
+.binary-d {
+    font-size: 14pt;
+    font-family: courier;
+}
+
+/* Overriding stuff */
+p {
+    margin: 0;
+    padding: 0;
+}
+
+.panel-body {
+    padding: 8px 15px 8px 15px;
+}
+
+.container { margin-top: 3%; }
+
+.header {
+    margin-left: 15px;
+    max-width: 350px;
+    margin-bottom: 2%;
+    border-bottom: 1px dashed black;
+}
+
+h1 {
+    font-family: courier;
 }

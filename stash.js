@@ -4,7 +4,7 @@ function doStash( coords, selectedMode ) {
 
     if (selectedMode === undefined) selectedMode = window.lastSelected;
     if (selectedMode === undefined) selectedMode = window.defaultStashView;
-    var container = $('#stash-box');
+    var container = $('#inner-stash-box');
     
     container.html('');
     code = encode( $.extend({}, coords, {mode: selectedMode}) );
@@ -14,7 +14,6 @@ function doStash( coords, selectedMode ) {
     var dropdown = $('<select/>', {'class': 'form-control', id: 'mode-selector'});
     
     var formGroup = $('<div/>', {'class': 'form-group'});
-    formGroup.append($('<label/>', {text: 'Stash mode' }));
     
     for( var opt in window.stashViews ) {
         var name = window.stashViews[opt].name;
@@ -31,18 +30,17 @@ function doStash( coords, selectedMode ) {
     
     formGroup.append(dropdown);
     container.append(formGroup);
-    
-    container.append( buildLinkButton( {
-        text: "Try stash",
-        href: buildQueryString( {code: code} )
-    }, 'btn-success') );
      
     if ($('#preview-frame-box').is(':hidden')) {
-        container.append(buildButton( 'Preview', 'btn-info preview-button', function() {
+        container.append(buildButton( 'Preview', 'btn-default preview-button', function() {
             showPreview( coords, selectedMode );
             $('.preview-button').hide();
+            window.location.href = '#preview';
         }));
     }
+    
+    container = $('#inner-publish-box');
+    container.html('');
     
     var form = $('<form/>', {
         action: "http://tinyurl.com/create.php",
@@ -60,10 +58,16 @@ function doStash( coords, selectedMode ) {
     form.append(formGroup);
     
     formGroup = $('<div/>', {'class': 'form-group'});
+    
+    formGroup.append( buildLinkButton( {
+        text: "Open link & try puzzle",
+        href: buildQueryString( {code: code} )
+    }, 'btn-default btn-block') );
+    
     formGroup.append( $('<input/>', {
         type: 'submit',
         name: 'submit',
-        'class': 'btn btn-danger',
+        'class': 'btn btn-danger btn-block',
         value: "Submit to tinyurl.com" }));
     form.append(formGroup);
     
@@ -74,16 +78,15 @@ function doStash( coords, selectedMode ) {
 }
 
 function hidePreview() {
-    var box = $('#preview-frame-box');
-    box.html('');
-    box.hide();
+    $('#inner-preview-frame-box').html('');
+    $('#preview-frame-box').hide();
     $('.preview-button').show();
 }
 
 function showPreview( coords, selectedMode ) {
     
-    var container = $('#preview-frame-box');
-    container.show();
+    var container = $('#inner-preview-frame-box');
+    $('#preview-frame-box').show();
     
     var codeActual = encode( $.extend({}, coords, {mode: selectedMode}) );
     var codeDebug = encode( $.extend({}, coords, {mode: 'bothOnMap'}) );
@@ -119,10 +122,12 @@ function beginStashed( stashedData ) {
     var view = window.stashViews[mode];
     if (view)
     {
+        $('#header').hide();
+        $('.explain-box').hide();
         $('body').addClass('stashed');
         $('body').addClass(mode);
         
-        var el = $('#content-box');
+        var el = $('#inner-primary-box');
         el.html(buildLoadingIndicator());
         
         var firstRender = true;
@@ -141,12 +146,12 @@ function beginStashed( stashedData ) {
 
 function beginNewStash() {
     
-    var container = $('#content-box');
+    var container = $('#inner-primary-box');
     container.html('');
     
     var stashButton = buildLinkButton(
         {text: 'Stash', href: '#stash', id: "stash-button"},
-        'btn-primary' );
+        'btn-primary btn-block' );
         
     stashButton.click( showStashBox );
     
@@ -177,7 +182,7 @@ function renderNewStash( coords ) {
     
     var leftBtnGroup = $('<div/>', {'class': 'btn-group'} );
     leftBtnGroup.append(buildButton( 'Refresh location', 'btn-default', function() {
-        $('#preview-frame-box').html('');
+        $('#inner-preview-frame-box').html('');
         leftBtnGroup.addClass('disabled');
         getLocation( function (loc) { renderNewStash( loc.coords ); } );
     }));
@@ -192,8 +197,8 @@ function renderNewStash( coords ) {
     previewBox.append(mapBox);
     
     var rightBtnGroup = $('<div/>', {'class': 'btn-group'} );
-    rightBtnGroup.append(buildButton( 'Watch location', 'btn-warning', function() {
-        $('#preview-frame-box').html('');
+    rightBtnGroup.append(buildButton( 'Track location', 'btn-default', function() {
+        $('#inner-preview-frame-box').html('');
         $('#stash-box').hide();
         $('#stash-button').hide();
         var watchId = watchLocation( function (loc) {
@@ -204,10 +209,11 @@ function renderNewStash( coords ) {
             mapBox.html('');
             mapBox.append(buildGoogleMap( window.lastWatchCoords ));
         } ));
-        rightBtnGroup.html(buildButton( 'Stop watch', 'btn-primary', function() {
+        rightBtnGroup.html(buildButton( 'Stop & stash', 'btn-primary', function() {
             stopWatching( watchId );
             renderNewStash( window.lastWatchCoords );
             $('#stash-box').show();
+            window.location.href = '#stash';
         } ));
     }));
     btnGroup.append(rightBtnGroup);
@@ -234,7 +240,7 @@ function buildButton( text, classes, action ) {
 
 function buildLinkButton( params, classes ) {
     return $('<a/>', $.extend({
-        'class': 'btn btn-primary btn-block btn-and-space '+classes,
+        'class': 'btn btn-and-space '+classes,
         role: "button",
     },params));
 }
@@ -279,13 +285,14 @@ function buildEditableCoordinateBox( coords, editable ) {
             
             var value = coords.latitude+", "+coords.longitude
             innerBox.append( buildInput( 'lat-long-edit', 'Latitude, Longitude', value) );
-            innerBox.append( buildButton( 'Stash these', 'btn-info', function() {
+            innerBox.append( buildButton( 'Stash these', 'btn-primary', function() {
                 var lalo = $('#lat-long-edit').val().split(',');
                 var la = $.trim(lalo[0]);
                 var lo = $.trim(lalo[1]);
                 var newCoords = $.extend({}, coords, { latitude: la, longitude: lo });
                 renderNewStash( newCoords );
                 showStashBox();
+                window.location.href = '#stash';
             }));
             box.append(innerBox);
         });
