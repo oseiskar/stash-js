@@ -1,6 +1,6 @@
 
 ### stash.js
 
-A no-backend geocaching puzzle HTML app. Hosted here: http://oseiskar.github.io/stash-js/
+A no-backend geocaching puzzle HTML app. Hosted here: https://oseiskar.github.io/stash-js/
 
-&copy; Otto Seiskari 2014
+&copy; Otto Seiskari 2014 (MIT License)
