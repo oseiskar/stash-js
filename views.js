@@ -51,7 +51,7 @@ window.stashViews = {
         
         var distance = getDistanceBetween( stashed, current );
         distance = Math.round(distance).toString();
-        distance = distance + " &plusmn; " + current.accuracy;
+        distance = distance + " &plusmn; " + Math.round(current.accuracy);
         distance = distance + " m";
         
         elem.append($('<div/>', {'class': 'command', html: distance}));
@@ -77,7 +77,7 @@ window.stashViews = {
         
         var dist = getDistanceBetween( stashed, current );
         var head = getHeading( current, stashed );
-        dist = Math.round(dist).toString() + " &plusmn; " + current.accuracy + ' m';
+        dist = Math.round(dist).toString() + " &plusmn; " + Math.round(current.accuracy) + ' m';
         head = Math.round(head).toString() + '&deg;';
         
         elem.append($('<div/>', {
