@@ -41,7 +41,7 @@ function doStash( coords, selectedMode ) {
     container.html('');
     
     var form = $('<form/>', {
-        action: "http://tinyurl.com/create.php",
+        action: "https://tinyurl.com/create.php",
         method: "post",
         id: 'tinyurl-form' });
     var formGroup = $('<div/>', {'class': 'form-group'});
@@ -321,7 +321,7 @@ function buildGoogleMap( params ) {
     };
 
     var image = $('<img/>', {
-        src: "http://maps.googleapis.com/maps/api/staticmap"+buildQueryString(queryParams)
+        src: "https://maps.googleapis.com/maps/api/staticmap"+buildQueryString(queryParams)
     });
     
     var container = $('<div/>', {'class': 'img-container'});
